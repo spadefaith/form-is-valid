@@ -1,0 +1,23 @@
+{
+  "name": "simple-form-valid",
+  "version": "1.0.0",
+  "description": "simple form validation",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spadefaith/form-is-valid.git"
+  },
+  "keywords": [
+    "form",
+    "validation"
+  ],
+  "author": "\"Cedrick F Campoto <cedrick1227@gmail.com> (https://cedrickcampoto.win)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/spadefaith/form-is-valid/issues"
+  },
+  "homepage": "https://github.com/spadefaith/form-is-valid#readme"
+}
