@@ -238,6 +238,8 @@ export default class FormValidator {
       controlSelector
     );
 
+    controls = controls.filter(control=>!!control.name)
+
     let val = await Promise.all(
       controls.map(control => {
         let value = control.value;
