@@ -21,11 +21,11 @@ const inputEvent = function (callbacks) {
 
 class Templating {
   replaceString(obj, string) {
-    let lefttag = '{{'.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-    let righttag = '}}'.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+    let lefttag = "{{".replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+    let righttag = "}}".replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
     for (let key in obj) {
       if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        let pattern = new RegExp(`${lefttag}${key}${righttag}`, 'g');
+        let pattern = new RegExp(`${lefttag}${key}${righttag}`, "g");
         pattern && (string = string.replace(pattern, `${obj[key]}`));
       }
     }
@@ -56,21 +56,21 @@ const validate = function (
   if (!attr) {
     return;
   }
-  let validator = attr.split(',').reduce((accu, iter) => {
-    let [key, value] = iter.split('=');
+  let validator = attr.split(",").reduce((accu, iter) => {
+    let [key, value] = iter.split("=");
 
-    if (value && value.includes(',')) {
-      value = value.split(',');
+    if (value && value.includes(",")) {
+      value = value.split(",");
     } else {
       value = value ? value.trim() : true;
-      if (value == 'true') {
+      if (value == "true") {
         value = true;
-      } else if (value == 'false') {
+      } else if (value == "false") {
         value = false;
       }
     }
 
-    if (key == 'required' && value == true) {
+    if (key == "required" && value == true) {
       isRequired = true;
     }
 
@@ -83,10 +83,10 @@ const validate = function (
   }
   const attrValues = {};
   let _callbacks = validator
-    .filter(item => {
+    .filter((item) => {
       return callbacks[item.key];
     })
-    .map(item => {
+    .map((item) => {
       let { key, value } = item;
       attrValues[key] = value;
 
@@ -101,19 +101,19 @@ const validate = function (
     });
 
   //skip the validation of not required and the value is empty
-  if (!isRequired && target.value == '') {
+  if (!isRequired && target.value == "") {
     _callbacks = [];
   }
 
   const asy = async function (callbacks) {
     const validation = await Promise.all(
-      callbacks.map(async callback => {
+      callbacks.map(async (callback) => {
         let _attrValues = attrValues[callback.validatorName];
 
         let message = callback.errorMessage;
 
-        if (_attrValues && message.includes('{') && message.includes('}')) {
-          let data = _attrValues.split(',').reduce((accu, iter, index) => {
+        if (_attrValues && message.includes("{") && message.includes("}")) {
+          let data = _attrValues.split(",").reduce((accu, iter, index) => {
             accu[`${index}`] = iter;
 
             return accu;
@@ -133,7 +133,7 @@ const validate = function (
       })
     );
 
-    if (validation.some(val => !val.test)) {
+    if (validation.some((val) => !val.test)) {
       errorCallback(target);
     } else {
       successCallback(target);
@@ -167,7 +167,7 @@ export default class FormValidator {
   }
 
   _addEvent(target) {
-    target.addEventListener('input', inputEvent(this.validation).bind(this));
+    target.addEventListener("input", inputEvent(this.validation).bind(this));
   }
   isLoading() {
     // console.log('validating');
@@ -189,6 +189,27 @@ export default class FormValidator {
       target.classList.add(this.errorClass);
     }
   }
+  removeErrorClass(target) {
+    if (target.classList.contains(this.errorClass)) {
+      target.classList.remove(this.errorClass);
+    }
+  }
+  cleanUp(el) {
+    const group = el.closest(`.${this.parentClass}`);
+
+    if (group) {
+      const errorTagIdentity = this.errorTextClass;
+
+      const connectedErrorTextParent = group.querySelector(
+        `.${errorTagIdentity}`
+      );
+      if (connectedErrorTextParent) {
+        connectedErrorTextParent.remove();
+      }
+    }
+
+    this.removeErrorClass(el);
+  }
   showError(target, validated) {
     let hasError = false;
     const messages = validated.reduce((accu, item) => {
@@ -199,7 +220,7 @@ export default class FormValidator {
       }
 
       return accu;
-    }, '');
+    }, "");
     // console.log(127,"error message", messages);
 
     // console.log(163,target, validated);
@@ -211,7 +232,7 @@ export default class FormValidator {
     let parent = target.closest(parentClass);
     // console.log(133, "parent",target,parentClass, parent);
     if (!parent) {
-      throw new Error('parent is not found');
+      throw new Error("parent is not found");
     }
 
     const errorTagIdentity = this.errorTextClass;
@@ -231,17 +252,29 @@ export default class FormValidator {
   }
   async validate(controlSelector) {
     if (!this.form) {
-      throw new Error('form is not found');
+      throw new Error("form is not found");
     }
+
     let controls = Utils.element.querySelectorAllIncluded(
       this.form,
       controlSelector
     );
 
-    controls = controls.filter(control=>!!control.name)
+    controls = controls
+      .map((control) => {
+        /**
+         * cleanup if the the control has not name;
+         */
+        if (!control.name) {
+          this.cleanUp(control);
+        }
+
+        return control;
+      })
+      .filter((control) => !!control.name);
 
     let val = await Promise.all(
-      controls.map(control => {
+      controls.map((control) => {
         let value = control.value;
         return validate(
           control,
@@ -256,16 +289,16 @@ export default class FormValidator {
     );
 
     return val
-      .map(item => {
+      .map((item) => {
         if (item) {
-          return item.every(item => {
+          return item.every((item) => {
             return item.test;
           });
         } else {
           return true;
         }
       })
-      .every(item => {
+      .every((item) => {
         return item == true;
       });
   }

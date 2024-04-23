@@ -1,6 +1,6 @@
 {
   "name": "simple-form-valid",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "simple form validation",
   "main": "index.js",
   "scripts": {
