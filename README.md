@@ -40,11 +40,15 @@ const validator = new FormValidator({
 
 ## Setting Form
 
+You can set which form to validate using setForm method
+
 ```javascript
 validator.setForm(document.getElementById("form"));
 ```
 
 ## Setting Watcher
+
+You can set a watcher function to be called whenever the validation status changes using the setWatcher method.
 
 ```javascript
 validator.setWatcher((test)=>{console.log(35,"All is valid",test)});
@@ -72,15 +76,5 @@ validator.start();
 
 document.getElementById("dispose").addEventListener("click", () => {
     validator.stop();
-});
-```
-
-## Watching Validation Status
-
-You can set a watcher function to be called whenever the validation status changes using the setWatcher method.
-
-```javascript
-validator.setWatcher((test) => {
-    console.log("All is valid", test);
 });
 ```

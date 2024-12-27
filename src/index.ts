@@ -137,13 +137,12 @@ export default class FormValidator {
 	async singleValidate(target: HTMLFormElement, isNotify:boolean){
 		const d = {name:target.name, value:target.value};
 		const constraints = target.getAttribute('data-validator') || target.dataset.validator;
-		const validators = Query.parseValidationAttr(constraints);
 
 		let validation:ValidatorResult[] = null as any;
-		if(!validators.length){
+		if(!constraints){
 			validation = this._defaultValidateResult(d);
 		} else {
-			validation = this.validator.many(validators.map(item=>item.key), d);
+			validation = this.validator.many(this._parse(constraints).map(item=>item.key), d);
 		}
 		const hasError = validation.some(item => !item.test);
 		if(isNotify){
@@ -179,11 +178,42 @@ export default class FormValidator {
 		target.addEventListener("input",singleton("_inputHandler"));
 		target.addEventListener("x-input", singleton("_inputCustomHandler"));
 	}
-	start(){
+	start(isInitialize){
+		if(isInitialize == true){
+			this.validate(null,true);
+		}
 		this._addEvent(this._form);
 	}
 	stop(){
 		this._form.removeEventListener("input",singleton("_inputHandler"));
 		this._form.removeEventListener("x-input", singleton("_inputCustomHandler"));
 	}
+
+	/**
+     * Parses a validation string and returns an array of validation rules.
+     * 
+     * @param str - The validation string to parse, formatted as key=value pairs separated by commas.
+     *              Example: "required=true, min=3, max=10"
+     * @returns An array of objects, each containing a `key` and a `value` property.
+     *          If the value is a boolean string ("true" or "false"), it will be converted to a boolean.
+     *          If the value contains multiple comma-separated values, it will be converted to an array.
+     *          Otherwise, the value will be trimmed and returned as a string.
+     */
+	_parse(str){
+		return str.split(',').reduce((accu, iter) => {
+			let [key, value] = iter.split('=');
+	
+			value = value ? value.trim() : true;
+			if (value == 'true') {
+				value = true;
+			} else if (value == 'false') {
+				value = false;
+			}
+
+			accu.push({ key: key.trim(), value:value });
+			return accu;
+		}, [])
+	}
 }
+
+export {Validator}
