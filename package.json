@@ -1,6 +1,6 @@
 {
   "name": "simple-form-valid",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "simple form validation",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
