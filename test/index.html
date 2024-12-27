@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form name="form" id="form">
+        <div class="group">
+            <label>Username</label>
+            <input data-validator="required" class="form-control" name="username" id="username" placeholder="username"/>
+        </div>
+        <div class="group">
+            <label>Email</label>
+            <input data-validator="required,email" class="form-control" name="email" id="email" placeholder="email"/>
+        </div>
+        <div>
+            <button>Submit</button>
+        </div>
+    </form>
+
+    <button id="dispose">Dispose</button>
+    <script type="module">
+        import FormValidator from "../dist/index.esm.js";
+
+        const validator = new FormValidator({
+            parentClass: "group",
+            errorClass: "invalid",
+            successClass: "valid",
+            errorTextParent: "group",
+            errorTextTag: "div",
+            errorTextClass: "invalid-feedback",
+            controlClass: ".form-control",
+        });
+        validator.setForm(document.getElementById("form"));
+        validator.setWatcher((test)=>{console.log(35,"All is valid",test)});
+
+        validator.addRule("required", ({name,value})=>value.length > 3, "Value is required");
+        validator.addRule("email", ({name,value})=>/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value), "Value should be a valid email");
+        
+        validator.start();
+
+
+        document.getElementById("dispose").addEventListener("click",()=>{
+            validator.stop();
+        });
+
+    </script>
+</body>
+</html>
